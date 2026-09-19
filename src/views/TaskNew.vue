@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { saveTask } from '../db';
-import { uid, todayStr } from '../utils';
+import { uid, todayStr, defaultPrepItems } from '../utils';
 import type { MoveTask } from '../types';
 
 const router = useRouter();
@@ -26,6 +26,7 @@ async function submit() {
     date: date.value,
     rooms,
     boxes: [],
+    prepItems: defaultPrepItems(),
     createdAt: Date.now(),
   };
   await saveTask(task);

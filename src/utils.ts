@@ -1,5 +1,5 @@
 import QRCode from 'qrcode';
-import type { MoveTask, BoxStatus } from './types';
+import type { MoveTask, BoxStatus, PrepItem } from './types';
 
 export function uid(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -7,6 +7,53 @@ export function uid(): string {
 
 export function todayStr(): string {
   return new Date().toISOString().split('T')[0];
+}
+
+/** 本地时区的 yyyy-mm-dd，避免 toISOString 的 UTC 偏移 */
+export function dateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/** 解析 yyyy-mm-dd 为本地日期 */
+export function parseDate(s: string): Date {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+
+/** 搬家日往前推 n 天的日期字符串（n=0 即搬家当天） */
+export function dateBefore(moveDate: string, daysBefore: number): string {
+  const d = parseDate(moveDate);
+  d.setDate(d.getDate() - daysBefore);
+  return dateStr(d);
+}
+
+/** 距离搬家日还有几天（负数=已过期/搬完）；同一天为 0 */
+export function daysUntil(moveDate: string): number {
+  const ms = parseDate(moveDate).getTime() - parseDate(todayStr()).getTime();
+  return Math.round(ms / 86400000);
+}
+
+function item(title: string, daysBefore: number, contact: string, duration: string): PrepItem {
+  return { id: uid(), title, daysBefore, contact, duration, done: false, createdAt: Date.now() };
+}
+
+/** 新任务自带的倒排准备事项模板 */
+export function defaultPrepItems(): PrepItem[] {
+  return [
+    item('联系物业开具搬家出门条', 3, '小区物业前台', '20分钟'),
+    item('预约搬家当天电梯使用时段', 3, '物业 / 电梯管理员', '15分钟'),
+    item('预订搬家车辆并确认车型、价格', 5, '搬家公司客服', '1小时'),
+    item('清空冰箱、断电除霜', 1, '自己 / 家人', '半天'),
+    item('衣物提前清洗晾晒', 2, '自己 / 家人', '1天'),
+    item('整理贵重物品、证件随身携带', 1, '自己', '1小时'),
+    item('办理水电气、宽带过户或停机', 7, '水电气营业厅 / 运营商', '半天'),
+    item('新居保洁、量尺寸规划家具位置', 2, '保洁 / 自己', '半天'),
+    item('现场清点箱数、核对出门条放行', 0, '物业保安 / 搬家师傅', '30分钟'),
+    item('引导车辆装卸、押车前往新居', 0, '搬家师傅', '2小时'),
+  ];
 }
 
 export function generateBoxCode(task: MoveTask, roomTo: string): string {
