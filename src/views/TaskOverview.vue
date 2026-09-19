@@ -84,6 +84,7 @@ onMounted(load);
       </div>
 
       <div class="toolbar no-print">
+        <button class="btn" @click="router.push(`/task/${task.id}/prep`)">准备清单</button>
         <button class="btn" @click="router.push(`/task/${task.id}/register`)">封箱登记</button>
         <button class="btn" @click="router.push(`/task/${task.id}/scan`)">扫码查箱</button>
         <button class="btn" @click="router.push(`/task/${task.id}/check`)">卸货核对</button>

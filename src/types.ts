@@ -16,6 +16,17 @@ export type Box = {
   updatedAt: number;
 };
 
+export type PrepItem = {
+  id: string;
+  title: string;
+  offsetDays: number; // 提前几天办，0 = 搬家当天
+  contact: string; // 找谁办
+  duration: string; // 大概多久
+  done: boolean;
+  doneAt?: number;
+  createdAt: number;
+};
+
 export type MoveTask = {
   id: string;
   title: string;
@@ -24,5 +35,6 @@ export type MoveTask = {
   date: string;
   rooms: string[];
   boxes: Box[];
+  prepItems?: PrepItem[];
   createdAt: number;
 };

@@ -9,6 +9,29 @@ export function todayStr(): string {
   return new Date().toISOString().split('T')[0];
 }
 
+export function addDays(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${dt.getFullYear()}-${mm}-${dd}`;
+}
+
+export function weekdayLabel(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][new Date(y, m - 1, d).getDay()];
+}
+
+export function formatDateTime(ts: number): string {
+  const dt = new Date(ts);
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  const hh = String(dt.getHours()).padStart(2, '0');
+  const mi = String(dt.getMinutes()).padStart(2, '0');
+  return `${mm}-${dd} ${hh}:${mi}`;
+}
+
 export function generateBoxCode(task: MoveTask, roomTo: string): string {
   const prefix = roomTo.charAt(0).toUpperCase();
   const sameRoomBoxes = task.boxes.filter((b) => b.roomTo === roomTo);

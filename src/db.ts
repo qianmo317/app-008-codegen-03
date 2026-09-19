@@ -1,4 +1,4 @@
-import type { MoveTask, Box } from './types';
+import type { MoveTask, Box, PrepItem } from './types';
 
 const DB_NAME = 'MovingBoxTracker';
 const DB_VERSION = 1;
@@ -82,5 +82,30 @@ export async function deleteBox(taskId: string, boxId: string): Promise<void> {
   const task = await getTask(taskId);
   if (!task) throw new Error('Task not found');
   task.boxes = task.boxes.filter((b) => b.id !== boxId);
+  await saveTask(task);
+}
+
+export async function addPrepItem(taskId: string, item: PrepItem): Promise<void> {
+  const task = await getTask(taskId);
+  if (!task) throw new Error('Task not found');
+  task.prepItems = task.prepItems ?? [];
+  task.prepItems.push(item);
+  await saveTask(task);
+}
+
+export async function updatePrepItem(taskId: string, item: PrepItem): Promise<void> {
+  const task = await getTask(taskId);
+  if (!task) throw new Error('Task not found');
+  task.prepItems = task.prepItems ?? [];
+  const idx = task.prepItems.findIndex((p) => p.id === item.id);
+  if (idx === -1) throw new Error('Prep item not found');
+  task.prepItems[idx] = item;
+  await saveTask(task);
+}
+
+export async function deletePrepItem(taskId: string, itemId: string): Promise<void> {
+  const task = await getTask(taskId);
+  if (!task) throw new Error('Task not found');
+  task.prepItems = (task.prepItems ?? []).filter((p) => p.id !== itemId);
   await saveTask(task);
 }
